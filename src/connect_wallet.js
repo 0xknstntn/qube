@@ -63,16 +63,22 @@ export async function connect_wallet () {
               // List of all coin/tokens used in this chain.
               currencies: [
                 {
-                  // Coin denomination to be displayed to the user.
                   coinDenom: "QUBE",
-                  // Actual denom (i.e. uatom, uscrt) used by the blockchain.
                   coinMinimalDenom: "uqube",
-                  // # of decimal points to convert minimal denomination to user-facing denomination.
                   coinDecimals: 6,
                   coinImageUrl: "https://apricot-grubby-booby-751.mypinata.cloud/ipfs/QmfJEqcjheC56qrs9cpW86RaGUW2xsJrB1suGWoZJScbXc",
-                  // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
-                  // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
-                  // coinGeckoId: ""
+                },
+                {
+                  coinDenom: "USQ",
+                  coinMinimalDenom: "uusd",
+                  coinDecimals: 6,
+                  coinImageUrl: "https://apricot-grubby-booby-751.mypinata.cloud/ipfs/QmcfLWPcB5MXxzc21jBktVVgnuXoCWNE5t19MUmLtdWSuw",
+                },
+                {
+                  coinDenom: "ATOM",
+                  coinMinimalDenom: "factory/qube1rya7pgk3tfnl4jtdeyasygqrrgxscg3h6en04s/uatom",
+                  coinDecimals: 6,
+                  coinImageUrl: "https://cryptologos.cc/logos/cosmos-atom-logo.png",
                 },
               ],
               // List of coin/tokens used as a fee token in this chain.
