@@ -1,48 +1,101 @@
 import {
-    assertIsBroadcastTxSuccess,
     SigningStargateClient,
   } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing";
-
-
+import { defaultRegistryTypes } from "@cosmjs/stargate";
+import { MsgBurn, MsgMint } from "./proto/stable/tx.ts"
 
 const denom1 = 'factory/qube1rya7pgk3tfnl4jtdeyasygqrrgxscg3h6en04s/uatom'
 const denom2 = 'uusd'
+const typeUrlMsgMint = "/core.stable.v1beta1.MsgMint";
+const typeUrlMsgBurn = "/core.stable.v1beta1.MsgBurn";
+
+function makeMintMsg(address, amount) {
+        const msgMint = {
+                creator: address,
+                amountInt: (amount.toString()) + denom1,
+                denomOut: denom2,
+        };
+        const msg = {
+            typeUrl: typeUrlMsgMint,
+            value: msgMint,
+        };
+        console.log(msg)
+        return msg
+}
+
+function makeBurnMsg(address, amount) {
+        const msgBurn = {
+                creator: address,
+                amountInt: (amount.toString()) + denom2,
+                denomOut: denom1,
+        };
+        const msg = {
+            typeUrl: typeUrlMsgBurn,
+            value: msgBurn,
+        };
+        console.log(msg)
+        return msg
+}
 
 export async function swap () {
-    const chainId = "qube-devnet-1";
-    await window.keplr.enable(chainId);
-    const offlineSigner = window.getOfflineSigner(chainId);
-    const accounts = await offlineSigner.getAccounts();
-    console.log(accounts)
+        const chainId = "qube-devnet-1";
+        await window.keplr.enable(chainId);
+        if(document.getElementById ('connectWalletbutton').textContent != '') {
+                const offlineSigner = window.getOfflineSigner(chainId);
+                const accounts = await offlineSigner.getAccounts();
 
-    const network = {
-      url: 'https://cors-anywhere.herokuapp.com/http://46.183.163.240:26657',
-      /*headers: {
-        //'Content-Type': 'application/json',
-        'Access-Control-Allow-Headers':
-        'Accept,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With',
-        'Access-Control-Methods': 'GET, POST, OPTION',
-        'Access-Control-Allow-Origin': 'http://localhost:8081',
-        'Access-Control-Expose-Headers': 'Content-Length,Content-Range',
-        'Access-Control-Max-Age': '1728000',
-      },*/
-    }
-    const client = await SigningStargateClient.connectWithSigner(
-      network,
-      offlineSigner,
-    );
-    // const MsgMint = new Type("MsgMint")
-    //     .add(new Field("creator", 1, "string"))
-    //     .add(new Field("amountInt", 2, "string"))
-    //     .add(new Field("denomOut", 3, "string"));
+                const network = {
+                        url: 'https://cors-anywhere.herokuapp.com/http://46.183.163.240:26657',
+                }
 
-    // const MsgBurn = new Type("MsgBurn")
-    //     .add(new Field("creator", 1, "string"))
-    //     .add(new Field("amountInt", 2, "string"))
-    //     .add(new Field("denomOut", 3, "string"));
+                var reg = new Registry(defaultRegistryTypes)
+                reg.register(typeUrlMsgMint, MsgMint)
+                reg.register(typeUrlMsgBurn, MsgBurn)
+                const client = await SigningStargateClient.connectWithSigner(
+                        network,
+                        offlineSigner,
+                        {
+                                registry: reg 
+                        }
+                );
 
-    const typeUrlMsgMint = "/core.stable.v1beta1.MsgMint";
-    const typeUrlMsgBurn = "/core.stable.v1beta1.MsgBurn";
-    client.registry.register(typeUrlMsgMint,{creator,amountInt,denomOut})
+                const fee = {
+                        amount: [
+                        {
+                        denom: "uqube",
+                        amount: "5000",
+                        },
+                        ],
+                        gas: "200000",
+                };
+
+                var amount =  Number(document.getElementById('inputAmountIn').value)
+                if ( amount != 0) {
+                        var denom = document.getElementById('outputDenom').textContent 
+                        var msg;
+                        if (denom == 'USQ') {
+                                msg = makeMintMsg(accounts[0].address, amount * 1000000 )
+                        } else if (denom == 'ATOM') {
+                                msg = makeBurnMsg(accounts[0].address, amount * 1000000 )
+                        }
+
+                        const result = await client.signAndBroadcast(
+                                accounts[0].address,
+                                [msg],
+                                fee
+                        );
+
+                        if (result.code !== undefined && result.code !== 0) {
+                                alert("Failed to send tx: " + result.log || result.rawLog);
+                        } else {
+                                alert("Succeed to send tx:" + result.transactionHash);
+                        }
+                        console.log(result.transactionHash)
+                } else {
+                        alert("Input amount");
+                }
+        } else {
+                alert("Please, connect wallet");
+        }
 }

@@ -2,7 +2,6 @@
 
 import './content.css';
 import {connect_wallet} from './connect_wallet.js'
-// import './swapBoxFunc.js'
 import fetch from 'node-fetch'
 import {swap} from './swap.js'
 
@@ -23,11 +22,11 @@ const handleInputAmount = async(event) => {
   var pricejson = await price.json()
   if (denom == 'USQ') {
     console.log((Number(event.target.value)) * pricejson.data.rates['USD'])
-    document.getElementById ('outputPriceDenom').textContent = ((Number(event.target.value)) * pricejson.data.rates['USD']).toFixed(2)
+    document.getElementById ('outputPriceDenom').textContent = "≈" +  ((Number(event.target.value)) * pricejson.data.rates['USD']).toFixed(2)
   }
   if (denom == 'ATOM') {
     console.log((Number(event.target.value)) * pricejson.data.rates['USD'])
-    document.getElementById ('outputPriceDenom').textContent = ((Number(event.target.value)) / pricejson.data.rates['USD']).toFixed(2)
+    document.getElementById ('outputPriceDenom').textContent = "≈" + ((Number(event.target.value)) / pricejson.data.rates['USD']).toFixed(2)
   }
 }
 
@@ -55,7 +54,7 @@ function App() {
                 </select>
                 </div>
                 <div>
-                <input onChange={handleInputAmount} type="text" className="input_atom"></input>
+                <input id="inputAmountIn" onChange={handleInputAmount} type="text" className="input_atom"></input>
                 </div>
               </div>
               <div className="usc">
