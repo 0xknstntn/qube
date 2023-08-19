@@ -16,9 +16,9 @@ export async function connect_wallet () {
               // The name of the chain to be displayed to the user.
               chainName: "Qube Devnet",
               // RPC endpoint of the chain. In this case we are using blockapsis, as it's accepts connections from any host currently. No Cors limitations.
-              rpc: "https://cors-anywhere.herokuapp.com/http://46.183.163.240:26657",
+              rpc: "http://46.183.163.240:26657",
               // REST endpoint of the chain.
-              rest: "https://cors-anywhere.herokuapp.com/http://46.183.163.240:443",
+              rest: "http://46.183.163.240:443",
               chainSymbolImageUrl: "https://apricot-grubby-booby-751.mypinata.cloud/ipfs/QmfJEqcjheC56qrs9cpW86RaGUW2xsJrB1suGWoZJScbXc",
               // Staking coin information
               stakeCurrency: {
